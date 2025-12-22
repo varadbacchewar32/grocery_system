@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Billing - Grocery Store</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+
+    .bill {
+      max-width: 400px;
+      margin: auto;
+      background: #ffffff;
+      padding: 15px;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 5px;
+    }
+
+    .store-info, .bill-info {
+      text-align: center;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px dashed #000;
+      margin: 10px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 6px 0;
+      text-align: left;
+    }
+
+    th {
+      border-bottom: 1px solid #000;
+    }
+
+    .right {
+      text-align: right;
+    }
+
+    .total {
+      font-weight: bold;
+    }
+
+    .print-btn {
+      margin-top: 15px;
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      background: #2c7be5;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    /* Hide print button when printing */
+    @media print {
+      .print-btn {
+        display: none;
+      }
+      body {
+        background: #ffffff;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bill">
+  <h1>Kirana Store</h1>
+  <div class="store-info">
+    Main Road, City<br>
+    Phone: 9876543210
+  </div>
+
+  <div class="bill-info">
+    Bill No: 1024<br>
+    Date: 22-12-2025
+  </div>
+
+  <hr>
+
+  <table>
+    <tr>
+      <th>Item</th>
+      <th>Qty</th>
+      <th class="right">Price</th>
+    </tr>
+
+    <tr>
+      <td>Rice</td>
+      <td>2 kg</td>
+      <td class="right">₹120</td>
+    </tr>
+
+    <tr>
+      <td>Oil</td>
+      <td>1 L</td>
+      <td class="right">₹160</td>
+    </tr>
+
+    <tr>
+      <td>Biscuits</td>
+      <td>3</td>
+      <td class="right">₹30</td>
+    </tr>
+  </table>
+
+  <hr>
+
+  <table>
+    <tr class="total">
+      <td>Total</td>
+      <td></td>
+      <td class="right">₹310</td>
+    </tr>
+  </table>
+
+  <hr>
+
+  <div class="bill-info">
+    Payment Mode: UPI<br>
+    Thank you! Visit again 🙂
+  </div>
+
+  <button class="print-btn" onclick="window.print()">Print Bill</button>
+</div>
+
+</body>
+</html>

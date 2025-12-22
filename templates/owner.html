@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Owner Dashboard - Grocery Store</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      padding: 20px;
+    }
+
+    h1, h2 {
+      margin-bottom: 10px;
+    }
+
+    section {
+      background: #ffffff;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+    }
+
+    .box {
+      padding: 15px;
+      background: #fafafa;
+      border-radius: 6px;
+      text-align: center;
+    }
+
+    .value {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background: #f5f5f5;
+    }
+
+    .ok { color: green; font-weight: bold; }
+    .low { color: orange; font-weight: bold; }
+    .out { color: red; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Navbar</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Dropdown
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Action</a></li>
+                  <li><a class="dropdown-item" href="#">Another action</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="#">Something else here</a></li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+              </li>
+            </ul>
+            <form class="d-flex" role="search">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+          </div>
+        </div>
+      </nav>
+      
+<h1>Owner Dashboard</h1>
+
+<!-- Dashboard Summary -->
+<section>
+  <h2>Dashboard Overview</h2>
+  <div class="summary">
+    <div class="box">
+      <div>Today's Sales</div>
+      <div class="value">₹4,250</div>
+    </div>
+    <div class="box">
+      <div>Total Products</div>
+      <div class="value">120</div>
+    </div>
+    <div class="box">
+      <div>Low Stock Items</div>
+      <div class="value">7</div>
+    </div>
+    <div class="box">
+      <div>Total Bills</div>
+      <div class="value">38</div>
+    </div>
+  </div>
+</section>
+
+<!-- Product List -->
+<section>
+  <h2>Products</h2>
+  <table>
+    <tr>
+      <th>Product Name</th>
+      <th>Category</th>
+      <th>Price</th>
+    </tr>
+    <tr>
+      <td>Rice</td>
+      <td>Grains</td>
+      <td>₹60 / kg</td>
+    </tr>
+    <tr>
+      <td>Cooking Oil</td>
+      <td>Oil</td>
+      <td>₹160 / L</td>
+    </tr>
+    <tr>
+      <td>Sugar</td>
+      <td>Essentials</td>
+      <td>₹42 / kg</td>
+    </tr>
+  </table>
+</section>
+
+<!-- Available Items -->
+<section>
+  <h2>Available Items</h2>
+  <table>
+    <tr>
+      <th>Item</th>
+      <th>Stock</th>
+      <th>Status</th>
+    </tr>
+    <tr>
+      <td>Rice</td>
+      <td>25 kg</td>
+      <td class="ok">Available</td>
+    </tr>
+    <tr>
+      <td>Biscuits</td>
+      <td>40 packs</td>
+      <td class="ok">Available</td>
+    </tr>
+  </table>
+</section>
+
+<!-- Stock Items -->
+<section>
+  <h2>Stock Items</h2>
+  <table>
+    <tr>
+      <th>Item</th>
+      <th>Quantity</th>
+      <th>Status</th>
+    </tr>
+    <tr>
+      <td>Oil</td>
+      <td>2 liters</td>
+      <td class="low">Low</td>
+    </tr>
+    <tr>
+      <td>Sugar</td>
+      <td>0 kg</td>
+      <td class="out">Out of Stock</td>
+    </tr>
+  </table>
+</section>
+
+<!-- Customer Bills -->
+<section>
+  <h2>All Customer Bills</h2>
+  <table>
+    <tr>
+      <th>Bill No</th>
+      <th>Date</th>
+      <th>Amount</th>
+      <th>Payment Mode</th>
+    </tr>
+    <tr>
+      <td>#1023</td>
+      <td>22-12-2025</td>
+      <td>₹120</td>
+      <td>Cash</td>
+    </tr>
+    <tr>
+      <td>#1022</td>
+      <td>22-12-2025</td>
+      <td>₹560</td>
+      <td>UPI</td>
+    </tr>
+    <tr>
+      <td>#1021</td>
+      <td>21-12-2025</td>
+      <td>₹240</td>
+      <td>Cash</td>
+    </tr>
+  </table>
+</section>
+
+</body>
+</html>

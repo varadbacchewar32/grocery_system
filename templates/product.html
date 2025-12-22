@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Product List - Grocery Store</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 15px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f1f1f1;
+    }
+
+    .price {
+      font-weight: bold;
+    }
+
+    .available {
+      color: green;
+      font-weight: bold;
+    }
+
+    .unavailable {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Product Items</h1>
+
+<table>
+  <tr>
+    <th>Product Name</th>
+    <th>Category</th>
+    <th>Price</th>
+    <th>Unit</th>
+    <th>Availability</th>
+  </tr>
+
+  <tr>
+    <td>Rice</td>
+    <td>Grains</td>
+    <td class="price">₹60</td>
+    <td>kg</td>
+    <td class="available">Available</td>
+  </tr>
+
+  <tr>
+    <td>Wheat Flour</td>
+    <td>Grains</td>
+    <td class="price">₹45</td>
+    <td>kg</td>
+    <td class="available">Available</td>
+  </tr>
+
+  <tr>
+    <td>Cooking Oil</td>
+    <td>Oil</td>
+    <td class="price">₹160</td>
+    <td>liter</td>
+    <td class="available">Available</td>
+  </tr>
+
+  <tr>
+    <td>Sugar</td>
+    <td>Essentials</td>
+    <td class="price">₹42</td>
+    <td>kg</td>
+    <td class="unavailable">Unavailable</td>
+  </tr>
+
+  <tr>
+    <td>Biscuits</td>
+    <td>Snacks</td>
+    <td class="price">₹10</td>
+    <td>pack</td>
+    <td class="available">Available</td>
+  </tr>
+
+  <tr>
+    <td>Milk</td>
+    <td>Dairy</td>
+    <td class="price">₹28</td>
+    <td>packet</td>
+    <td class="available">Available</td>
+  </tr>
+
+</table>
+
+</body>
+</html>

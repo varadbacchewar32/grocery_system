@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kirana Sales Dashboard (POC)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .card h2 {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 22px;
+      margin: 0;
+      font-weight: bold;
+    }
+
+    section {
+      background: #ffffff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f0f0f0;
+    }
+
+    .low {
+      color: red;
+      font-weight: bold;
+    }
+
+    .ok {
+      color: green;
+      font-weight: bold;
+    }
+  </style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+<body>
+    {% include 'navbar.html' %}
+  <h1>Kirana Store Dashboard</h1>
+
+  <!-- Top Summary -->
+  <div class="cards">
+    <div class="card">
+      <h2>Today's Sales</h2>
+      <p>₹4,250</p>
+    </div>
+    <div class="card">
+      <h2>Number of Bills</h2>
+      <p>38</p>
+    </div>
+    <div class="card">
+      <h2>Cash / UPI</h2>
+      <p>₹1,800 / ₹2,450</p>
+    </div>
+    <div class="card">
+      <h2>Low Stock Items</h2>
+      <p>5</p>
+    </div>
+  </div>
+
+  <!-- Sales Overview -->
+  <section>
+    <h2>Sales Overview (Today)</h2>
+    <p>Total Items Sold: <strong>112</strong></p>
+    <p>Average Bill Value: <strong>₹112</strong></p>
+  </section>
+
+  <!-- Recent Bills -->
+  <section>
+    <h2>Recent Bills</h2>
+    <table>
+      <tr>
+        <th>Bill No</th>
+        <th>Amount</th>
+        <th>Payment</th>
+      </tr>
+      <tr>
+        <td>#1023</td>
+        <td>₹120</td>
+        <td>Cash</td>
+      </tr>
+      <tr>
+        <td>#1022</td>
+        <td>₹560</td>
+        <td>UPI</td>
+      </tr>
+      <tr>
+        <td>#1021</td>
+        <td>₹75</td>
+        <td>Cash</td>
+      </tr>
+      <tr>
+        <td>#1020</td>
+        <td>₹240</td>
+        <td>UPI</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- Inventory -->
+  <section>
+    <h2>Inventory Status</h2>
+    <table>
+      <tr>
+        <th>Item</th>
+        <th>Stock</th>
+        <th>Status</th>
+      </tr>
+      <tr>
+        <td>Rice</td>
+        <td>25 kg</td>
+        <td class="ok">OK</td>
+      </tr>
+      <tr>
+        <td>Oil</td>
+        <td>2 packs</td>
+        <td class="low">Low</td>
+      </tr>
+      <tr>
+        <td>Biscuits</td>
+        <td>0</td>
+        <td class="low">Out</td>
+      </tr>
+      <tr>
+        <td>Sugar</td>
+        <td>5 kg</td>
+        <td class="low">Low</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- Profit -->
+  <section>
+    <h2>Profit Summary (Today)</h2>
+    <p>Revenue: <strong>₹4,250</strong></p>
+    <p>Estimated Cost: <strong>₹3,600</strong></p>
+    <p>Profit: <strong>₹650</strong></p>
+  </section>
+
+</body>
+</html>
