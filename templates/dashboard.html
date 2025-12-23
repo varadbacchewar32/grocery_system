@@ -1,123 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Kirana Sales Dashboard (POC)</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      margin: 0;
-      padding: 20px;
-    }
+<meta charset="UTF-8" />
+<title>Kirana Owner Dashboard</title>
 
-    h1 {
-      margin-bottom: 20px;
-    }
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+body{
+  background: linear-gradient(120deg,#f6f9fc,#eef2f7);
+  font-family: "Segoe UI", sans-serif;
+}
 
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 15px;
-      margin-bottom: 25px;
-    }
+.page-container{
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
+}
 
-    .card {
-      background: #ffffff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
+.page-title{
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 25px;
+}
 
-    .card h2 {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 8px;
-    }
+/* Summary cards */
+.summary-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+  gap: 18px;
+  margin-bottom: 30px;
+}
 
-    .card p {
-      font-size: 22px;
-      margin: 0;
-      font-weight: bold;
-    }
+.summary-card{
+  background: white;
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0,0,0,.08);
+}
 
-    section {
-      background: #ffffff;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
+.summary-card h6{
+  color: #777;
+  font-size: 14px;
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
+.summary-value{
+  font-size: 26px;
+  font-weight: 700;
+}
 
-    th, td {
-      text-align: left;
-      padding: 8px;
-      border-bottom: 1px solid #ddd;
-      font-size: 14px;
-    }
+.icon-box{
+  font-size: 28px;
+}
 
-    th {
-      background: #f0f0f0;
-    }
+/* Section cards */
+.section-card{
+  background: white;
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0,0,0,.08);
+  margin-bottom: 25px;
+}
 
-    .low {
-      color: red;
-      font-weight: bold;
-    }
+.table thead{
+  background: #f8fafc;
+}
 
-    .ok {
-      color: green;
-      font-weight: bold;
-    }
-  </style>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+.badge-ok{
+  background: #e8f7ee;
+  color: #1e824c;
+  font-weight: 600;
+}
+
+.badge-low{
+  background: #fff3cd;
+  color: #9a6b00;
+  font-weight: 600;
+}
+
+.badge-out{
+  background: #fdecea;
+  color: #b02a37;
+  font-weight: 600;
+}
+</style>
 </head>
-<body>
-    {% include 'navbar.html' %}
-  <h1>Kirana Store Dashboard</h1>
 
-  <!-- Top Summary -->
-  <div class="cards">
-    <div class="card">
-      <h2>Today's Sales</h2>
-      <p>₹4,250</p>
+<body>
+
+{% include 'owner-navbar.html' %}
+{% block owner_navbar %}{% endblock owner_navbar %}
+
+<div class="page-container">
+    
+<h2 class="page-title">📊 Kirana Store Dashboard</h2>
+
+<!-- Summary -->
+<div class="summary-grid">
+
+  <div class="summary-card d-flex justify-content-between align-items-center">
+    <div>
+      <h6>Today's Sales</h6>
+      <div class="summary-value">₹4,250</div>
     </div>
-    <div class="card">
-      <h2>Number of Bills</h2>
-      <p>38</p>
-    </div>
-    <div class="card">
-      <h2>Cash / UPI</h2>
-      <p>₹1,800 / ₹2,450</p>
-    </div>
-    <div class="card">
-      <h2>Low Stock Items</h2>
-      <p>5</p>
-    </div>
+    <i class="bi bi-currency-rupee icon-box text-success"></i>
   </div>
 
-  <!-- Sales Overview -->
-  <section>
-    <h2>Sales Overview (Today)</h2>
-    <p>Total Items Sold: <strong>112</strong></p>
-    <p>Average Bill Value: <strong>₹112</strong></p>
-  </section>
+  <div class="summary-card d-flex justify-content-between align-items-center">
+    <div>
+      <h6>Total Bills</h6>
+      <div class="summary-value">38</div>
+    </div>
+    <i class="bi bi-receipt icon-box text-primary"></i>
+  </div>
 
-  <!-- Recent Bills -->
-  <section>
-    <h2>Recent Bills</h2>
-    <table>
+  <div class="summary-card d-flex justify-content-between align-items-center">
+    <div>
+      <h6>Cash / UPI</h6>
+      <div class="summary-value">₹1,800 / ₹2,450</div>
+    </div>
+    <i class="bi bi-wallet2 icon-box text-warning"></i>
+  </div>
+
+  <div class="summary-card d-flex justify-content-between align-items-center">
+    <div>
+      <h6>Low Stock Items</h6>
+      <div class="summary-value">5</div>
+    </div>
+    <i class="bi bi-exclamation-triangle icon-box text-danger"></i>
+  </div>
+
+</div>
+
+<!-- Sales Overview -->
+<div class="section-card">
+  <h5 class="fw-semibold mb-3">📈 Sales Overview (Today)</h5>
+  <div class="row text-center">
+    <div class="col-md-6">
+      <p class="text-muted mb-1">Total Items Sold</p>
+      <h4 class="fw-bold">112</h4>
+    </div>
+    <div class="col-md-6">
+      <p class="text-muted mb-1">Average Bill Value</p>
+      <h4 class="fw-bold">₹112</h4>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Bills -->
+<div class="section-card">
+  <h5 class="fw-semibold mb-3">🧾 Recent Bills</h5>
+  <table class="table table-hover align-middle">
+    <thead>
       <tr>
         <th>Bill No</th>
         <th>Amount</th>
-        <th>Payment</th>
+        <th>Payment Mode</th>
       </tr>
+    </thead>
+    <tbody>
       <tr>
         <td>#1023</td>
         <td>₹120</td>
@@ -138,48 +183,66 @@
         <td>₹240</td>
         <td>UPI</td>
       </tr>
-    </table>
-  </section>
+    </tbody>
+  </table>
+</div>
 
-  <!-- Inventory -->
-  <section>
-    <h2>Inventory Status</h2>
-    <table>
+<!-- Inventory Status -->
+<div class="section-card">
+  <h5 class="fw-semibold mb-3">📦 Inventory Status</h5>
+  <table class="table table-hover align-middle">
+    <thead>
       <tr>
         <th>Item</th>
         <th>Stock</th>
         <th>Status</th>
       </tr>
+    </thead>
+    <tbody>
       <tr>
         <td>Rice</td>
         <td>25 kg</td>
-        <td class="ok">OK</td>
+        <td><span class="badge badge-ok">OK</span></td>
       </tr>
       <tr>
         <td>Oil</td>
         <td>2 packs</td>
-        <td class="low">Low</td>
+        <td><span class="badge badge-low">Low</span></td>
       </tr>
       <tr>
         <td>Biscuits</td>
         <td>0</td>
-        <td class="low">Out</td>
+        <td><span class="badge badge-out">Out</span></td>
       </tr>
       <tr>
         <td>Sugar</td>
         <td>5 kg</td>
-        <td class="low">Low</td>
+        <td><span class="badge badge-low">Low</span></td>
       </tr>
-    </table>
-  </section>
+    </tbody>
+  </table>
+</div>
 
-  <!-- Profit -->
-  <section>
-    <h2>Profit Summary (Today)</h2>
-    <p>Revenue: <strong>₹4,250</strong></p>
-    <p>Estimated Cost: <strong>₹3,600</strong></p>
-    <p>Profit: <strong>₹650</strong></p>
-  </section>
+<!-- Profit -->
+<div class="section-card">
+  <h5 class="fw-semibold mb-3">💰 Profit Summary (Today)</h5>
+  <div class="row text-center">
+    <div class="col-md-4">
+      <p class="text-muted mb-1">Revenue</p>
+      <h5 class="fw-bold">₹4,250</h5>
+    </div>
+    <div class="col-md-4">
+      <p class="text-muted mb-1">Estimated Cost</p>
+      <h5 class="fw-bold">₹3,600</h5>
+    </div>
+    <div class="col-md-4">
+      <p class="text-muted mb-1">Profit</p>
+      <h5 class="fw-bold text-success">₹650</h5>
+    </div>
+  </div>
+</div>
+
+</div>
 
 </body>
 </html>

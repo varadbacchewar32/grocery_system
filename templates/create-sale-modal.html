@@ -1,0 +1,120 @@
+{% block create_sale_modal %}
+<!-- Create Sale Modal -->
+<div class="modal fade" id="saleModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">🧾 Create New Sale</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <!-- Add Item -->
+        <div class="row g-2 mb-3">
+          <div class="col-md-5">
+            <label class="form-label">Product</label>
+            <select id="saleProduct" class="form-select">
+              <option value="">Select Product</option>
+              <option value="Rice|60">Rice (₹60/kg)</option>
+              <option value="Oil|150">Oil (₹150/ltr)</option>
+              <option value="Sugar|45">Sugar (₹45/kg)</option>
+              <option value="Biscuits|10">Biscuits (₹10/pc)</option>
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Quantity</label>
+            <input type="number" id="saleQty" class="form-control" placeholder="Qty">
+          </div>
+
+          <div class="col-md-2 d-grid align-items-end">
+            <button class="btn btn-primary" onclick="addSaleItem()">Add</button>
+          </div>
+        </div>
+
+        <!-- Sale Items -->
+        <table class="table table-bordered align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Product</th>
+              <th>Rate</th>
+              <th>Qty</th>
+              <th>Total</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="saleItemsTable">
+            <tr>
+              <td colspan="5" class="text-center text-muted">
+                No items added
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Grand Total -->
+        <div class="text-end mt-3">
+          <h5>Total: ₹<span id="saleGrandTotal">0</span></h5>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-success">Create Sale</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+let saleItems = [];
+let saleTotal = 0;
+
+function addSaleItem(){
+  const productValue = saleProduct.value;
+  const qty = Number(saleQty.value);
+
+  if(!productValue || qty <= 0){
+    alert("Select product and valid quantity");
+    return;
+  }
+
+  const [name, rate] = productValue.split("|");
+  const itemTotal = rate * qty;
+
+  saleItems.push({name, rate, qty, itemTotal});
+  renderSaleItems();
+}
+
+function renderSaleItems(){
+  saleItemsTable.innerHTML = "";
+  saleTotal = 0;
+
+  saleItems.forEach((item, i) => {
+    saleTotal += item.itemTotal;
+    saleItemsTable.innerHTML += `
+      <tr>
+        <td>${item.name}</td>
+        <td>₹${item.rate}</td>
+        <td>${item.qty}</td>
+        <td>₹${item.itemTotal}</td>
+        <td>
+          <button class="btn btn-sm btn-danger" onclick="removeSaleItem(${i})">✖</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  saleGrandTotal.innerText = saleTotal;
+}
+
+function removeSaleItem(index){
+  saleItems.splice(index,1);
+  renderSaleItems();
+}
+</script>
+{% endblock create_sale_modal %}

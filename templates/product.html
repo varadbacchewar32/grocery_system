@@ -1,116 +1,233 @@
+{% include 'owner-navbar.html' %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Product List - Grocery Store</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      padding: 20px;
-    }
+<meta charset="UTF-8">
+<title>Product Management</title>
 
-    h1 {
-      margin-bottom: 15px;
-    }
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #ffffff;
-      border-radius: 6px;
-      overflow: hidden;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
+<style>
+body{
+  background: linear-gradient(120deg,#f6f9fc,#eef2f7);
+  font-family: "Segoe UI", sans-serif;
+}
 
-    th, td {
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-      font-size: 14px;
-    }
+.page-container{
+  max-width: 1100px;
+  margin: auto;
+}
 
-    th {
-      background: #f1f1f1;
-    }
+.page-title{
+  font-weight: 700;
+  color: #2c3e50;
+}
 
-    .price {
-      font-weight: bold;
-    }
+.card{
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 8px 25px rgba(0,0,0,.08);
+}
 
-    .available {
-      color: green;
-      font-weight: bold;
-    }
+.card-header{
+  background: transparent;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #eee;
+}
 
-    .unavailable {
-      color: red;
-      font-weight: bold;
-    }
-  </style>
+.form-control, .form-select{
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.form-control:focus, .form-select:focus{
+  box-shadow: 0 0 0 .2rem rgba(13,110,253,.15);
+}
+
+.btn-primary{
+  border-radius: 12px;
+  padding: 10px;
+  font-weight: 600;
+}
+
+.table{
+  margin-bottom: 0;
+}
+
+.table thead{
+  background: #f8fafc;
+}
+
+.table th{
+  font-weight: 600;
+  color: #555;
+}
+
+.badge-unit{
+  background: #e9f2ff;
+  color: #0d6efd;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 20px;
+}
+
+.action-btn{
+  border-radius: 8px;
+}
+
+.empty-state{
+  text-align: center;
+  padding: 40px;
+  color: #999;
+}
+</style>
 </head>
+
 <body>
 
-<h1>Product Items</h1>
+  {% block owner_navbar %}
+  {% endblock owner_navbar %}
+<div class="page-container mt-4">
 
-<table>
-  <tr>
-    <th>Product Name</th>
-    <th>Category</th>
-    <th>Price</th>
-    <th>Unit</th>
-    <th>Availability</th>
-  </tr>
+<h2 class="page-title mb-4">
+  🛒 Product Management
+</h2>
 
-  <tr>
-    <td>Rice</td>
-    <td>Grains</td>
-    <td class="price">₹60</td>
-    <td>kg</td>
-    <td class="available">Available</td>
-  </tr>
+<!-- Product Form -->
+<div class="card mb-4">
+  <div class="card-header">Add / Edit Product</div>
+  <div class="card-body">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">Product Name</label>
+        <input type="text" id="productName" class="form-control" placeholder="e.g. Rice">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Rate (₹)</label>
+        <input type="number" id="productRate" class="form-control" placeholder="e.g. 60">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Unit</label>
+        <select id="productUnit" class="form-select">
+          <option value="">Select Unit</option>
+          <option value="kg">Per Kg</option>
+          <option value="liter">Per Liter</option>
+          <option value="piece">Per Piece</option>
+        </select>
+      </div>
+      <div class="col-md-2 d-grid">
+        <button class="btn btn-primary" onclick="saveProduct()">
+          <i class="bi bi-check-circle"></i> Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
-  <tr>
-    <td>Wheat Flour</td>
-    <td>Grains</td>
-    <td class="price">₹45</td>
-    <td>kg</td>
-    <td class="available">Available</td>
-  </tr>
+<!-- Products Table -->
+<div class="card">
+  <div class="card-header">Available Products</div>
+  <div class="card-body p-0">
+    <table class="table table-hover align-middle text-center">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Product</th>
+          <th>Rate</th>
+          <th>Unit</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="productTable">
+        <tr>
+          <td colspan="5" class="empty-state">
+            No products added yet
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
 
-  <tr>
-    <td>Cooking Oil</td>
-    <td>Oil</td>
-    <td class="price">₹160</td>
-    <td>liter</td>
-    <td class="available">Available</td>
-  </tr>
+</div>
 
-  <tr>
-    <td>Sugar</td>
-    <td>Essentials</td>
-    <td class="price">₹42</td>
-    <td>kg</td>
-    <td class="unavailable">Unavailable</td>
-  </tr>
+<script>
+let products=[];
+let editIndex=-1;
 
-  <tr>
-    <td>Biscuits</td>
-    <td>Snacks</td>
-    <td class="price">₹10</td>
-    <td>pack</td>
-    <td class="available">Available</td>
-  </tr>
+function saveProduct(){
+  const name=productName.value.trim();
+  const rate=productRate.value;
+  const unit=productUnit.value;
 
-  <tr>
-    <td>Milk</td>
-    <td>Dairy</td>
-    <td class="price">₹28</td>
-    <td>packet</td>
-    <td class="available">Available</td>
-  </tr>
+  if(!name || !rate || !unit){
+    alert("Fill all fields");
+    return;
+  }
 
-</table>
+  if(editIndex===-1){
+    products.push({name,rate,unit});
+  }else{
+    products[editIndex]={name,rate,unit};
+    editIndex=-1;
+  }
+
+  clearForm();
+  renderTable();
+}
+
+function renderTable(){
+  productTable.innerHTML="";
+
+  if(products.length===0){
+    productTable.innerHTML=`
+      <tr>
+        <td colspan="5" class="empty-state">No products added yet</td>
+      </tr>`;
+    return;
+  }
+
+  products.forEach((p,i)=>{
+    productTable.innerHTML+=`
+      <tr>
+        <td>${i+1}</td>
+        <td class="fw-semibold">${p.name}</td>
+        <td>₹${p.rate}</td>
+        <td><span class="badge-unit">${p.unit}</span></td>
+        <td>
+          <button class="btn btn-sm btn-warning action-btn me-1" onclick="editProduct(${i})">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button class="btn btn-sm btn-danger action-btn" onclick="deleteProduct(${i})">
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      </tr>`;
+  });
+}
+
+function editProduct(i){
+  productName.value=products[i].name;
+  productRate.value=products[i].rate;
+  productUnit.value=products[i].unit;
+  editIndex=i;
+}
+
+function deleteProduct(i){
+  if(confirm("Delete this product?")){
+    products.splice(i,1);
+    renderTable();
+  }
+}
+
+function clearForm(){
+  productName.value="";
+  productRate.value="";
+  productUnit.value="";
+}
+</script>
 
 </body>
 </html>

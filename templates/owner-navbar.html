@@ -1,0 +1,52 @@
+{% block owner_navbar %}
+{% include 'create-sale-modal.html' %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4">
+  <div class="container-fluid px-4">
+
+    <!-- Brand -->
+    <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/dashboard">
+      🛒 Grocery Owner
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#ownerNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="ownerNavbar">
+
+      <!-- Left Links -->
+      <ul class="navbar-nav me-auto gap-lg-2">
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/dashboard' %}active{% endif %}" href="/dashboard">📊 Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/product">🛒 Products</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/inventory">📦 Inventory</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/bill">🧾 Bills</a>
+        </li>
+      </ul>
+
+      <!-- CTA + Right -->
+      <div class="d-flex align-items-center gap-3">
+
+        <!-- CTA -->
+        <button class="btn btn-success btn-sm px-3"
+                data-bs-toggle="modal"
+                data-bs-target="#saleModal">
+          ➕ Create Sale
+        </button>
+        {% include 'create-sale-modal.html' %}
+        <span class="text-light small opacity-75">👤 Owner</span>
+        <a href="/logout" class="btn btn-outline-light btn-sm px-3">Logout</a>
+      </div>
+    </div>
+  </div>
+</nav>
+{% endblock owner_navbar %}
