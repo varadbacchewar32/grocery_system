@@ -1,76 +1,86 @@
 <!-- Create Sale Modal -->
-<div class="modal fade" id="saleModal" tabindex="-1">
+<div class="modal fade" id="saleModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
   <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: var(--radius-lg);">
 
-      <div class="modal-header">
-        <h5 class="modal-title">🧾 Create New Sale</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title fw-bold font-heading">🧾 Create New Sale</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <div class="modal-body">
+      <div class="modal-body pt-4">
 
-        <!-- Add Item -->
-        <div class="row g-2 mb-3">
-          <div class="col-md-5">
-            <label class="form-label">Product</label>
-            <select id="saleProduct" class="form-select">
-              <option value="">Select Product</option>
-              {% for p in products %}
-              <option value="{{ p.product_id }}|{{ p.rate }}|{{ p.product_name }}">{{ p.product_name }} (₹{{ p.rate }}/{{ p.unit }})</option>
-              {% endfor %}
-            </select>
-          </div>
-
-          <div class="col-md-3">
-            <label class="form-label">Quantity</label>
-            <input type="number" id="saleQty" class="form-control" placeholder="Qty">
-          </div>
-
-          <div class="col-md-2 d-grid align-items-end">
-            <button class="btn btn-primary" onclick="addSaleItem()">Add</button>
+        <!-- Add Item Form -->
+        <div class="p-3 bg-light rounded-3 mb-4 border decoration-none">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-6">
+              <label class="form-label small fw-bold text-uppercase text-secondary tracking-wider">Product</label>
+              <select id="saleProduct" class="form-select border-0 shadow-sm">
+                <option value="">Select Product...</option>
+                {% for p in products %}
+                <option value="{{ p.product_id }}|{{ p.rate }}|{{ p.product_name }}">{{ p.product_name }} (₹{{ p.rate
+                  }}/{{ p.unit }})</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label small fw-bold text-uppercase text-secondary tracking-wider">Quantity</label>
+              <input type="number" id="saleQty" class="form-control border-0 shadow-sm" placeholder="0">
+            </div>
+            <div class="col-md-3">
+              <button class="btn btn-primary w-100 shadow-sm" onclick="addSaleItem()">
+                <i class="bi bi-plus-lg"></i> Add Item
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Sale Items -->
-        <table class="table table-bordered align-middle">
-          <thead class="table-light">
-            <tr>
-              <th>Product</th>
-              <th>Rate</th>
-              <th>Qty</th>
-              <th>Total</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="saleItemsTable">
-            <tr>
-              <td colspan="5" class="text-center text-muted">
-                No items added
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <!-- Sale Items List -->
+        <div class="table-responsive mb-4" style="max-height: 300px; overflow-y: auto;">
+          <table class="table align-middle">
+            <thead class="bg-white sticky-top">
+              <tr>
+                <th class="border-top-0 text-secondary text-uppercase small">Item</th>
+                <th class="border-top-0 text-secondary text-uppercase small">Rate</th>
+                <th class="border-top-0 text-secondary text-uppercase small">Qty</th>
+                <th class="border-top-0 text-secondary text-uppercase small">Total</th>
+                <th class="border-top-0 text-end"></th>
+              </tr>
+            </thead>
+            <tbody id="saleItemsTable" class="border-top-0">
+              <tr>
+                <td colspan="5" class="text-center text-muted py-4 small">
+                  <i class="bi bi-basket3 display-6 d-block mb-2 opacity-25"></i>
+                  No items added yet
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-        <!-- Payment Mode -->
-         <div class="row mt-3">
-             <div class="col-md-6">
-                 <label class="form-label">Payment Mode</label>
-                 <select id="paymentMode" class="form-select">
-                     <option value="Cash">Cash</option>
-                     <option value="UPI">UPI</option>
-                 </select>
-             </div>
-             <div class="col-md-6 text-end">
-                <h5>Total: ₹<span id="saleGrandTotal">0</span></h5>
-             </div>
-         </div>
+        <!-- Checkout Section -->
+        <div class="row align-items-center g-3 border-top pt-3">
+          <div class="col-md-5">
+            <label class="form-label small fw-bold text-uppercase text-secondary tracking-wider">Payment Mode</label>
+            <select id="paymentMode"
+              class="form-select border-primary border-opacity-25 bg-primary bg-opacity-10 text-primary fw-medium">
+              <option value="Cash">💵 Cash</option>
+              <option value="UPI">📱 UPI</option>
+            </select>
+          </div>
+          <div class="col-md-7 text-end">
+            <small class="text-muted d-block text-uppercase tracking-wider fw-bold">Grand Total</small>
+            <h3 class="fw-bold text-dark mb-0">₹<span id="saleGrandTotal">0</span></h3>
+          </div>
+        </div>
 
       </div>
 
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button class="btn btn-success" onclick="submitSale()">Create Sale</button>
+      <div class="modal-footer border-top-0 pt-0 pb-4 px-4">
+        <button class="btn btn-light text-secondary border-0" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-success px-4 shadow-lg" onclick="submitSale()">
+          <i class="bi bi-check-lg me-2"></i> Complete Sale
+        </button>
       </div>
 
     </div>
@@ -78,51 +88,51 @@
 </div>
 
 <script>
-let saleItems = [];
-let saleTotal = 0;
+  let saleItems = [];
+  let saleTotal = 0;
 
-function addSaleItem(){
-  const productValue = document.getElementById('saleProduct').value;
-  const qty = Number(document.getElementById('saleQty').value);
+  function addSaleItem() {
+    const productValue = document.getElementById('saleProduct').value;
+    const qty = Number(document.getElementById('saleQty').value);
 
-  if(!productValue || qty <= 0){
-    alert("Select product and valid quantity");
-    return;
-  }
+    if (!productValue || qty <= 0) {
+      alert("Select product and valid quantity");
+      return;
+    }
 
-  const [productId, rate, name] = productValue.split("|");
-  const itemTotal = Number(rate) * qty;
+    const [productId, rate, name] = productValue.split("|");
+    const itemTotal = Number(rate) * qty;
 
-  // Check if exists
-  const existing = saleItems.find(i => i.product_id === productId);
-  if(existing){
+    // Check if exists
+    const existing = saleItems.find(i => i.product_id === productId);
+    if (existing) {
       existing.qty += qty;
       existing.itemTotal += itemTotal;
-  } else {
-      saleItems.push({product_id: productId, name, rate, qty, itemTotal});
+    } else {
+      saleItems.push({ product_id: productId, name, rate, qty, itemTotal });
+    }
+
+    renderSaleItems();
+
+    // Reset fields
+    document.getElementById('saleQty').value = '';
+    document.getElementById('saleProduct').value = '';
   }
-  
-  renderSaleItems();
-  
-  // Reset fields
-  document.getElementById('saleQty').value = '';
-  document.getElementById('saleProduct').value = '';
-}
 
-function renderSaleItems(){
-  const tbody = document.getElementById('saleItemsTable');
-  tbody.innerHTML = "";
-  saleTotal = 0;
+  function renderSaleItems() {
+    const tbody = document.getElementById('saleItemsTable');
+    tbody.innerHTML = "";
+    saleTotal = 0;
 
-  if(saleItems.length === 0){
+    if (saleItems.length === 0) {
       tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No items added</td></tr>`;
       document.getElementById('saleGrandTotal').innerText = "0";
       return;
-  }
+    }
 
-  saleItems.forEach((item, i) => {
-    saleTotal += item.itemTotal;
-    tbody.innerHTML += `
+    saleItems.forEach((item, i) => {
+      saleTotal += item.itemTotal;
+      tbody.innerHTML += `
       <tr>
         <td>${item.name}</td>
         <td>₹${item.rate}</td>
@@ -133,52 +143,51 @@ function renderSaleItems(){
         </td>
       </tr>
     `;
-  });
+    });
 
-  document.getElementById('saleGrandTotal').innerText = saleTotal;
-}
+    document.getElementById('saleGrandTotal').innerText = saleTotal;
+  }
 
-function removeSaleItem(index){
-  saleItems.splice(index,1);
-  renderSaleItems();
-}
+  function removeSaleItem(index) {
+    saleItems.splice(index, 1);
+    renderSaleItems();
+  }
 
-function submitSale(){
-    if(saleItems.length === 0){
-        alert("Please add items to sale");
-        return;
+  function submitSale() {
+    if (saleItems.length === 0) {
+      alert("Please add items to sale");
+      return;
     }
-    
+
     const paymentMode = document.getElementById('paymentMode').value;
-    
+
     const payload = {
-        payment_mode: paymentMode,
-        items: saleItems.map(i => ({
-            product_id: i.product_id,
-            quantity: i.qty
-        }))
+      payment_mode: paymentMode,
+      items: saleItems.map(i => ({
+        product_id: i.product_id,
+        quantity: i.qty
+      }))
     };
-    
+
     fetch('/create_sale', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
     })
-    .then(response => response.json())
-    .then(data => {
-        if(data.success){
-            // alert("Sale created successfully!");
-            window.location.href = `/bill?sale_id=${data.sale_id}`;
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // alert("Sale created successfully!");
+          window.location.href = `/bill?sale_id=${data.sale_id}`;
         } else {
-            alert("Error: " + data.message);
+          alert("Error: " + data.message);
         }
-    })
-    .catch(err => {
+      })
+      .catch(err => {
         console.error(err);
         alert("Failed to create sale");
-    });
-}
+      });
+  }
 </script>
-

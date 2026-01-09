@@ -1,227 +1,352 @@
 {% extends "base.html" %}
 {% block content %}
 {% include 'owner-navbar.html' %}
-{% block owner_navbar %}{% endblock owner_navbar %}
 
-<div class="page-container">
+<div class="page-container fade-in">
 
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="page-title mb-0">📊 Kirana Store Dashboard</h2>
-    <button class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#saleModal">
-      <i class="bi bi-cart-plus"></i> New Sale
-    </button>
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-5">
+    <div>
+      <h2 class="mb-1 fw-bold text-dark">Dashboard</h2>
+      <p class="text-secondary mb-0">Welcome back! Here's what's happening today.</p>
+    </div>
+    <div class="d-flex gap-2">
+      {{ current_date }}
+    </div>
   </div>
 
   <!-- Flash Messages -->
   {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
   {% for category, message in messages %}
-  <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show"
+  <div
+    class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show shadow-sm border-0"
     role="alert">
-    {{ message }}
+    <div class="d-flex align-items-center gap-2">
+      <i
+        class="bi {{ 'bi-check-circle-fill text-success' if category == 'success' else 'bi-exclamation-circle-fill text-danger' }}"></i>
+      {{ message }}
+    </div>
     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
   </div>
   {% endfor %}
   {% endif %}
   {% endwith %}
 
-  <!-- Add Items Form -->
-  <div class="section-card mb-4">
-    <h5 class="fw-semibold mb-3">➕ Add New Item</h5>
-    <form method="POST" action="/add_product" enctype="application/x-www-form-urlencoded">
-      <div class="row g-3">
-        <div class="col-md-3">
-          <label class="form-label">Item Name</label>
-          <input type="text" name="product_name" class="form-control" placeholder="e.g. Rice" required>
+  <!-- Stats Grid -->
+  <div class="row g-4 mb-5">
+
+    <!-- Revenue Card -->
+    <div class="col-md-3">
+      <div class="summary-card h-100 position-relative overflow-hidden border-0"
+        style="background: linear-gradient(135deg, #4F46E5 0%, #4338ca 100%); color: white;">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <p class="mb-0 opacity-75 small text-uppercase fw-bold tracking-wider">Today's Revenue</p>
+            <h3 class="fw-bold mb-0 mt-1">₹{{ daily_sales }}</h3>
+          </div>
+          <div class="bg-white bg-opacity-25 rounded-3 p-2">
+            <i class="bi bi-currency-rupee fs-4"></i>
+          </div>
         </div>
-        <div class="col-md-2">
-          <label class="form-label">Rate (₹)</label>
-          <input type="number" name="rate" class="form-control" placeholder="e.g. 60" step="0.01" required>
+        <div class="small opacity-75">
+          <i class="bi bi-arrow-up-right"></i> {{ daily_bills }} Bills processed
         </div>
-        <div class="col-md-2">
-          <label class="form-label">Unit</label>
-          <select name="unit" class="form-select" required>
-            <option value="">Select</option>
-            <option value="kg">Per Kg</option>
-            <option value="liter">Per Liter</option>
-            <option value="piece">Per Piece</option>
-          </select>
+      </div>
+    </div>
+
+    <!-- Cash/UPI Card -->
+    <div class="col-md-3">
+      <div class="summary-card h-100 border-0 bg-white">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <p class="text-secondary mb-0 small text-uppercase fw-bold tracking-wider">Payment Split</p>
+            <div class="mt-2">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2">Cash</span>
+                <span class="fw-bold">₹{{ cash_sales }}</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-2">UPI</span>
+                <span class="fw-bold">₹{{ upi_sales }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="bg-warning bg-opacity-10 text-warning rounded-3 p-2">
+            <i class="bi bi-wallet2 fs-4"></i>
+          </div>
         </div>
-        <div class="col-md-3">
-          <label class="form-label">Profit (₹)</label>
-          <input type="number" name="profit" class="form-control" placeholder="e.g. 5" step="0.01" required>
+      </div>
+    </div>
+
+    <!-- Profit Analysis -->
+    <div class="col-md-3">
+      <div class="summary-card h-100 border-0 bg-white">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <p class="text-secondary mb-0 small text-uppercase fw-bold tracking-wider">Profitability</p>
+            <div class="mt-2">
+              <div class="mb-1">
+                <small class="text-muted">Net Profit</small>
+                <div class="fw-bold text-success">₹{{ daily_profit }}</div>
+              </div>
+              <div>
+                <small class="text-muted">Margin</small>
+                <div class="fw-bold">{{ profit_margin }}%</div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-success bg-opacity-10 text-success rounded-3 p-2">
+            <i class="bi bi-graph-up-arrow fs-4"></i>
+          </div>
         </div>
-        <div class="col-md-2 d-grid">
-          <label class="form-label">&nbsp;</label>
-          <button type="submit" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Add Item
+      </div>
+    </div>
+
+    <!-- Low Stock -->
+    <div class="col-md-3">
+      <div class="summary-card h-100 border-0 bg-white">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <p class="text-secondary mb-0 small text-uppercase fw-bold tracking-wider">Inventory Alert</p>
+            <h3 class="fw-bold mb-0 mt-1 {{ 'text-danger' if low_stock > 0 else 'text-success' }}">{{ low_stock }}</h3>
+            <p class="small text-muted mt-1">Items Low on Stock</p>
+          </div>
+          <div class="bg-danger bg-opacity-10 text-danger rounded-3 p-2">
+            <i class="bi bi-exclamation-triangle fs-4"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="row g-4 mb-5">
+
+    <!-- Left Column: Chart & Recent Sales -->
+    <div class="col-lg-8">
+
+      <!-- Sales Chart -->
+      <div class="section-card mb-4" style="min-height: 400px;">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold m-0 text-dark">📈 Weekly Sales Trend</h5>
+        </div>
+        <div class="position-relative" style="height: 300px; width: 100%;">
+          <canvas id="salesChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Recent Transactions Table -->
+      <div class="section-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold m-0 text-dark">Recent Transactions</h5>
+          <a href="/bill" class="btn btn-sm btn-light text-primary fw-medium small">View All</a>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead class="bg-light">
+              <tr>
+                <th class="ps-3 border-top-0 rounded-start">Bill No</th>
+                <th class="border-top-0">Amount</th>
+                <th class="border-top-0">Mode</th>
+                <th class="border-top-0 text-end pe-3 rounded-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for sale in recent_sales %}
+              <tr class="hover-bg-gray transition-all">
+                <td class="ps-3 text-secondary fw-medium">#{{ sale.sale_id }}</td>
+                <td class="fw-bold text-dark">₹{{ sale.total_amount }}</td>
+                <td>
+                  {% if sale.payment_mode == 'UPI' %}
+                  <span
+                    class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-10 px-2 py-1">UPI</span>
+                  {% else %}
+                  <span
+                    class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-10 px-2 py-1">Cash</span>
+                  {% endif %}
+                </td>
+                <td class="text-end pe-3">
+                  <a href="/bill?sale_id={{ sale.sale_id }}"
+                    class="btn btn-sm btn-white border shadow-sm text-secondary">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                </td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="4" class="text-center text-muted py-4">No recent transactions</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Add Product & Inventory -->
+    <div class="col-lg-4">
+
+      <!-- Add Product Form -->
+      <div class="section-card mb-4 bg-primary text-white position-relative overflow-hidden border-0"
+        style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
+
+        <h5 class="fw-bold mb-4 position-relative">✨ Add Quick Item</h5>
+        <form method="POST" action="/add_product">
+          <div class="mb-3">
+            <label class="form-label small text-uppercase text-white-50 fw-bold tracking-wider">Item Name</label>
+            <input type="text" name="product_name"
+              class="form-control form-control-dark bg-white bg-opacity-10 border-0 text-white placeholder-white-50"
+              placeholder="e.g. Basmati Rice" required style="backdrop-filter: blur(5px);">
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label small text-uppercase text-white-50 fw-bold tracking-wider">Rate (₹)</label>
+              <input type="number" name="rate" class="form-control bg-white bg-opacity-10 border-0 text-white"
+                placeholder="0.00" step="0.01" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label small text-uppercase text-white-50 fw-bold tracking-wider">Profit (₹)</label>
+              <input type="number" name="profit" class="form-control bg-white bg-opacity-10 border-0 text-white"
+                placeholder="0.00" step="0.01" required>
+            </div>
+          </div>
+          <div class="mb-4">
+            <label class="form-label small text-uppercase text-white-50 fw-bold tracking-wider">Unit & Unit Type</label>
+            <!-- Assuming simple input for now or select, keeping layout clean -->
+            <div class="input-group">
+              <select name="unit" class="form-select bg-white bg-opacity-10 border-0 text-white">
+                <option value="kg" class="text-dark">Kg</option>
+                <option value="liter" class="text-dark">Liter</option>
+                <option value="piece" class="text-dark">Piece</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary w-100 fw-bold shadow-lg"
+            style="background: #4F46E5; border: none;">
+            Add to Inventory <i class="bi bi-arrow-right ms-2"></i>
           </button>
+          <!-- Hidden profit field if we moved it out, but I added it above -->
+        </form>
+      </div>
+
+      <!-- Inventory Status List -->
+      <div class="section-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold m-0 text-dark">📦 Stock Status</h5>
+          <a href="/inventory" class="btn btn-sm btn-light text-primary fw-medium small">Manage</a>
+        </div>
+        <div class="d-flex flex-column gap-3" style="max-height: 400px; overflow-y: auto;">
+          {% for item in inventory_items %}
+          <div
+            class="d-flex align-items-center justify-content-between p-2 rounded-3 hover-bg-gray transition-all border border-transparent">
+            <div class="d-flex align-items-center gap-3">
+              <div class="bg-light rounded-circle d-flex align-items-center justify-content-center text-secondary"
+                style="width: 40px; height: 40px;">
+                <i class="bi bi-box"></i>
+              </div>
+              <div>
+                <h6 class="mb-0 fw-semibold text-dark">{{ item.product.product_name }}</h6>
+                <small class="text-muted">{{ item.quantity }} {{ item.product.unit }} in stock</small>
+              </div>
+            </div>
+            <div>
+              {% if item.quantity == 0 %}
+              <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-10">Out</span>
+              {% elif item.quantity < 5 %} <span
+                class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-10">Low</span>
+                {% else %}
+                <span
+                  class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-10">OK</span>
+                {% endif %}
+            </div>
+          </div>
+          {% else %}
+          <p class="text-muted text-center py-3">No inventory data</p>
+          {% endfor %}
         </div>
       </div>
-    </form>
-  </div>
 
-  <!-- Summary -->
-  <div class="summary-grid">
-
-    <div class="summary-card d-flex justify-content-between align-items-center">
-      <div>
-        <h6>Today's Sales</h6>
-        <div class="summary-value">₹{{ daily_sales }}</div>
-      </div>
-      <i class="bi bi-currency-rupee icon-box text-success"></i>
-    </div>
-
-    <div class="summary-card d-flex justify-content-between align-items-center">
-      <div>
-        <h6>Total Bills</h6>
-        <div class="summary-value">{{ daily_bills }}</div>
-      </div>
-      <i class="bi bi-receipt icon-box text-primary"></i>
-    </div>
-
-    <div class="summary-card d-flex justify-content-between align-items-center">
-      <div>
-        <h6>Cash / UPI</h6>
-        <div class="summary-value">₹{{ cash_sales }} / ₹{{ upi_sales }}</div>
-      </div>
-      <i class="bi bi-wallet2 icon-box text-warning"></i>
-    </div>
-
-    <div class="summary-card d-flex justify-content-between align-items-center">
-      <div>
-        <h6>Low Stock Items</h6>
-        <div class="summary-value">{{ low_stock }}</div>
-      </div>
-      <i class="bi bi-exclamation-triangle icon-box text-danger"></i>
-    </div>
-
-  </div>
-
-  <!-- Sales Overview -->
-  <div class="section-card">
-    <h5 class="fw-semibold mb-3">📈 Sales Overview (Today)</h5>
-    <div class="row text-center">
-      <div class="col-md-6">
-        <p class="text-muted mb-1">Total Units Sold</p>
-        <h4 class="fw-bold">{{ items_sold_today }}</h4>
-      </div>
-      <div class="col-md-6">
-        <p class="text-muted mb-1">Average Bill Value</p>
-        <h4 class="fw-bold">₹{{ avg_bill_value }}</h4>
-      </div>
-    </div>
-  </div>
-
-  <!-- Recent Bills -->
-  <div class="section-card">
-    <h5 class="fw-semibold mb-3">🧾 Recent Bills</h5>
-    <table class="table table-hover align-middle">
-      <thead>
-        <tr>
-          <th>Bill No</th>
-          <th>Amount</th>
-          <th>Payment Mode</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for sale in recent_sales %}
-        <tr onclick="window.location.href='/bill?sale_id={{ sale.sale_id }}'" style="cursor: pointer;">
-          <td>#{{ sale.sale_id }}</td>
-          <td>₹{{ sale.total_amount }}</td>
-          <td>{{ sale.payment_mode or 'Cash' }}</td>
-        </tr>
-        {% else %}
-        <tr>
-          <td colspan="3" class="text-center text-muted">No recent bills</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Inventory Status -->
-  <div class="section-card">
-    <h5 class="fw-semibold mb-3">📦 Inventory Status</h5>
-    <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-      <table class="table table-hover align-middle">
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Stock</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in inventory_items %}
-          <tr>
-            <td>{{ item.product.product_name }}</td>
-            <td>{{ item.quantity }} {{ item.product.unit }}</td>
-            <td>
-              {% if item.quantity == 0 %}
-              <span class="badge badge-out">Out</span>
-              {% elif item.quantity < 5 %} <span class="badge badge-low">Low</span>
-                {% else %}
-                <span class="badge badge-ok">OK</span>
-                {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Products List -->
-  <div class="section-card">
-    <h5 class="fw-semibold mb-3">🛒 Products List</h5>
-    {% if products %}
-    <div class="table-responsive">
-      <table class="table table-hover align-middle">
-        <thead>
-          <tr>
-            <th>Product Name</th>
-            <th>Rate</th>
-            <th>Unit</th>
-            <th>Profit</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for product in products %}
-          <tr>
-            <td class="fw-semibold">{{ product.product_name }}</td>
-            <td>₹{{ product.rate }}</td>
-            <td>{{ product.unit }}</td>
-            <td class="text-success fw-bold">₹{{ product.profit }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    {% else %}
-    <p class="text-muted">No products added yet. Use the form above to add products.</p>
-    {% endif %}
-  </div>
-
-  <!-- Profit -->
-  <div class="section-card">
-    <h5 class="fw-semibold mb-3">💰 Profit Summary (Today)</h5>
-    <div class="row text-center">
-      <div class="col-md-4">
-        <p class="text-muted mb-1">Revenue</p>
-        <h5 class="fw-bold">₹{{ daily_sales }}</h5>
-      </div>
-      <div class="col-md-4">
-        <p class="text-muted mb-1">Estimated Cost</p>
-        <h5 class="fw-bold">N/A</h5>
-      </div>
-      <div class="col-md-4">
-        <p class="text-muted mb-1">Profit</p>
-        <h5 class="fw-bold text-success">N/A</h5>
-      </div>
     </div>
   </div>
 
 </div>
-{% include 'create-sale-modal.html' %}
+
+<!-- Chart Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const ctx = document.getElementById('salesChart').getContext('2d');
+
+    // Gradient for the chart
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(79, 70, 229, 0.2)'); // Brand Color
+    gradient.addColorStop(1, 'rgba(79, 70, 229, 0)');
+
+    const chartData = {{ chart_data | tojson
+  }};
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: chartData.labels,
+      datasets: [{
+        label: 'Daily Sales (₹)',
+        data: chartData.data,
+        backgroundColor: gradient,
+        borderColor: '#4F46E5',
+        borderWidth: 2,
+        pointBackgroundColor: '#ffffff',
+        pointBorderColor: '#4F46E5',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        fill: true,
+        tension: 0.4 // Smooth curve
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          backgroundColor: '#1e293b',
+          padding: 12,
+          displayColors: false,
+          callbacks: {
+            label: function (context) {
+              return '₹' + context.parsed.y;
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: {
+            color: '#f1f5f9',
+            borderDash: [5, 5]
+          },
+          ticks: {
+            font: { family: 'Inter', size: 11 },
+            color: '#94a3b8'
+          },
+          border: { display: false }
+        },
+        x: {
+          grid: { display: false },
+          ticks: {
+            font: { family: 'Inter', size: 11 },
+            color: '#94a3b8'
+          },
+          border: { display: false }
+        }
+      }
+    }
+  });
+});
+</script>
 {% endblock content %}

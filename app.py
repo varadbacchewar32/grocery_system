@@ -2,7 +2,7 @@ from flask import Blueprint, request, render_template, redirect, url_for , sessi
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import db , User , Product , Inventory , Sale , SaleItem
 from sqlalchemy import func
-from datetime import datetime
+from datetime import datetime, timedelta
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///grocery.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
@@ -45,6 +45,11 @@ def login():
 
     return render_template("login.html")
 
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    return redirect(url_for('login'))
+
     
 
 @app.route('/test_post', methods=['GET', 'POST'])
@@ -86,6 +91,23 @@ def dashboard():
     # Recent Bills
     recent_sales = Sale.query.order_by(Sale.created_at.desc()).limit(5).all()
     
+    # Chart Data (Last 7 Days)
+    dates = []
+    amounts = []
+    for i in range(6, -1, -1):
+        date = (datetime.now() - timedelta(days=i)).date()
+        date_str = date.strftime('%Y-%m-%d')
+        # SQLite doesn't have a nice date function, so we filter by range or iterating.
+        # Simple iterator for small app:
+        day_total = db.session.query(func.sum(Sale.total_amount)).filter(func.date(Sale.created_at) == date_str).scalar() or 0
+        dates.append(date.strftime('%d %b'))
+        amounts.append(day_total)
+    
+    chart_data = {
+        'labels': dates,
+        'data': amounts
+    }
+    
     # Sales Overview (Today)
     # Total Items Sold Today
     items_sold_today = db.session.query(func.sum(SaleItem.quantity)).join(Sale).filter(func.date(Sale.created_at) == today).scalar() or 0
@@ -98,7 +120,16 @@ def dashboard():
     # Actually, let's just use Inventory.query and access .product (backref)
     inventory_items = Inventory.query.join(Product).all()
 
-    return render_template("dashboard.html", products=products, daily_sales=daily_sales, daily_bills=daily_bills, low_stock=low_stock, recent_sales=recent_sales, inventory_items=inventory_items, cash_sales=cash_sales, upi_sales=upi_sales, items_sold_today=items_sold_today, avg_bill_value=avg_bill_value)
+    # Profit Metrics (Today)
+    daily_profit = db.session.query(
+        func.sum(SaleItem.quantity * Product.profit)
+    ).join(Sale, SaleItem.sale_id == Sale.sale_id
+    ).join(Product, SaleItem.product_id == Product.product_id
+    ).filter(func.date(Sale.created_at) == today).scalar() or 0
+    
+    profit_margin = int((daily_profit / daily_sales * 100)) if daily_sales > 0 else 0
+
+    return render_template("dashboard.html", products=products, daily_sales=daily_sales, daily_bills=daily_bills, low_stock=low_stock, recent_sales=recent_sales, inventory_items=inventory_items, cash_sales=cash_sales, upi_sales=upi_sales, items_sold_today=items_sold_today, avg_bill_value=avg_bill_value, chart_data=chart_data, daily_profit=daily_profit, profit_margin=profit_margin)
 
 
 @app.route('/create_sale', methods=['POST'])

@@ -1,94 +1,216 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<title>Kirana Owner Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kirana Owner Dashboard</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-<style>
-body{
-  background: linear-gradient(120deg,#f6f9fc,#eef2f7);
-  font-family: "Segoe UI", sans-serif;
-}
+  <!-- Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@500;600;700&display=swap"
+    rel="stylesheet">
 
-.page-container{
-  max-width: 1200px;
-  margin: auto;
-  padding: 20px;
-}
+  <!-- Bootstrap 5.3.3 & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-.page-title{
-  font-weight: 700;
-  color: #2c3e50;
-  margin-bottom: 25px;
-}
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-/* Summary cards */
-.summary-grid{
-  display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
-  gap: 18px;
-  margin-bottom: 30px;
-}
+  <style>
+    :root {
+      /* Premium Palette */
+      --primary: #4F46E5;
+      /* Indigo 600 */
+      --primary-dark: #4338ca;
+      /* Indigo 700 */
+      --secondary: #64748b;
+      /* Slate 500 */
+      --success: #10b981;
+      /* Emerald 500 */
+      --warning: #f59e0b;
+      /* Amber 500 */
+      --danger: #ef4444;
+      /* Red 500 */
+      --background: #f3f4f6;
+      /* Gray 100 */
+      --surface: #ffffff;
 
-.summary-card{
-  background: white;
-  padding: 18px;
-  border-radius: 14px;
-  box-shadow: 0 8px 25px rgba(0,0,0,.08);
-}
+      /* Shadows */
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
-.summary-card h6{
-  color: #777;
-  font-size: 14px;
-}
+      /* Border Radius */
+      --radius-md: 0.75rem;
+      /* 12px */
+      --radius-lg: 1rem;
+      /* 16px */
+    }
 
-.summary-value{
-  font-size: 26px;
-  font-weight: 700;
-}
+    body {
+      background-color: var(--background);
+      font-family: 'Inter', sans-serif;
+      color: #1f2937;
+      /* Gray 800 */
+      -webkit-font-smoothing: antialiased;
+    }
 
-.icon-box{
-  font-size: 28px;
-}
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    .page-title,
+    .navbar-brand {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      letter-spacing: -0.025em;
+    }
 
-/* Section cards */
-.section-card{
-  background: white;
-  padding: 18px;
-  border-radius: 14px;
-  box-shadow: 0 8px 25px rgba(0,0,0,.08);
-  margin-bottom: 25px;
-}
+    /* Page Layout */
+    .page-container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
 
-.table thead{
-  background: #f8fafc;
-}
+    .page-title {
+      color: #111827;
+      font-size: 1.875rem;
+      margin-bottom: 2rem;
+    }
 
-.badge-ok{
-  background: #e8f7ee;
-  color: #1e824c;
-  font-weight: 600;
-}
+    /* Cards */
+    .section-card,
+    .summary-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(229, 231, 235, 0.5);
+      /* Gray 200 */
+      padding: 1.5rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-.badge-low{
-  background: #fff3cd;
-  color: #9a6b00;
-  font-weight: 600;
-}
+    .summary-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
 
-.badge-out{
-  background: #fdecea;
-  color: #b02a37;
-  font-weight: 600;
-}
-</style>
+    /* Buttons */
+    .btn {
+      font-weight: 500;
+      padding: 0.625rem 1.25rem;
+      border-radius: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+      border-color: var(--primary-dark);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    /* Form Inputs */
+    .form-control,
+    .form-select {
+      border-radius: 0.5rem;
+      border: 1px solid #d1d5db;
+      /* Gray 300 */
+      padding: 0.625rem 1rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    }
+
+    /* Tables */
+    .table {
+      margin-bottom: 0;
+    }
+
+    .table thead th {
+      background-color: #f9fafb;
+      /* Gray 50 */
+      color: #6b7280;
+      /* Gray 500 */
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .table tbody td {
+      padding: 1rem;
+      vertical-align: middle;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    /* Badges */
+    .badge {
+      padding: 0.35em 0.8em;
+      border-radius: 9999px;
+      font-weight: 500;
+      font-size: 0.75rem;
+    }
+
+    .badge-ok {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    /* Emerald 100/800 */
+    .badge-low {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    /* Amber 100/800 */
+    .badge-out {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    /* Red 100/800 */
+
+    /* Animations */
+    .fade-in {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
 </head>
-<body>  
-    {% block content %}{% endblock content %}
-    
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<body>
+  {% block content %}{% endblock content %}
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

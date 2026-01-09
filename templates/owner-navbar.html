@@ -1,51 +1,76 @@
 {% block owner_navbar %}
 {% include 'create-sale-modal.html' %}
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4">
-  <div class="container-fluid px-4">
+<nav class="navbar navbar-expand-lg sticky-top mb-4"
+  style="background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); box-shadow: var(--shadow-sm);">
+  <div class="container-fluid px-4 py-2">
 
     <!-- Brand -->
-    <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="/dashboard">
-      🛒 Grocery Owner
+    <a class="navbar-brand d-flex align-items-center gap-2 text-primary" href="/dashboard">
+      <i class="bi bi-shop fs-4"></i>
+      <span class="fw-bold tracking-tight">Grocery System</span>
     </a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#ownerNavbar">
-      <span class="navbar-toggler-icon"></span>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#ownerNavbar">
+      <i class="bi bi-list fs-3 text-secondary"></i>
     </button>
 
     <div class="collapse navbar-collapse" id="ownerNavbar">
 
-      <!-- Left Links -->
-      <ul class="navbar-nav me-auto gap-lg-2">
+      <!-- Center Links -->
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-lg-1">
         <li class="nav-item">
-          <a class="nav-link {% if request.path == '/dashboard' %}active{% endif %}" href="/dashboard">📊 Dashboard</a>
+          <a class="nav-link px-3 rounded-pill {% if request.path == '/dashboard' %}active bg-primary text-white fw-medium{% else %}text-secondary hover-bg-gray{% endif %}"
+            href="/dashboard">
+            <i class="bi bi-speedometer2 me-1"></i> Dashboard
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/product">🛒 Products</a>
+          <a class="nav-link px-3 rounded-pill {% if request.path == '/product' %}active bg-primary text-white fw-medium{% else %}text-secondary hover-bg-gray{% endif %}"
+            href="/product">
+            <i class="bi bi-box-seam me-1"></i> Products
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/inventory">📦 Inventory</a>
+          <a class="nav-link px-3 rounded-pill {% if request.path == '/inventory' %}active bg-primary text-white fw-medium{% else %}text-secondary hover-bg-gray{% endif %}"
+            href="/inventory">
+            <i class="bi bi-clipboard-data me-1"></i> Inventory
+          </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/bill">🧾 Bills</a>
+          <a class="nav-link px-3 rounded-pill {% if request.path == '/bill' %}active bg-primary text-white fw-medium{% else %}text-secondary hover-bg-gray{% endif %}"
+            href="/bill">
+            <i class="bi bi-receipt me-1"></i> History
+          </a>
         </li>
       </ul>
 
-      <!-- CTA + Right -->
+      <!-- Right Actions -->
       <div class="d-flex align-items-center gap-3">
-
-        <!-- CTA -->
-        <button class="btn btn-success btn-sm px-3"
-                data-bs-toggle="modal"
-                data-bs-target="#saleModal">
-          ➕ Create Sale
+        <button class="btn btn-primary d-flex align-items-center gap-2 shadow-sm" data-bs-toggle="modal"
+          data-bs-target="#saleModal">
+          <i class="bi bi-plus-lg small"></i>
+          <span>New Sale</span>
         </button>
-        {% include 'create-sale-modal.html' %}
-        <span class="text-light small opacity-75">👤 Owner</span>
-        <a href="/login" class="btn btn-outline-light btn-sm px-3">Logout</a>
+
+        <div class="vr h-50 mx-1 text-secondary opacity-25"></div>
+
+        <div class="dropdown">
+          <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle text-dark"
+            data-bs-toggle="dropdown">
+            <div
+              class="bg-primary-subtle rounded-circle d-flex align-items-center justify-content-center text-primary fw-bold"
+              style="width: 32px; height: 32px;">
+              A
+            </div>
+            <span class="ms-2 small fw-medium text-secondary">Admin</span>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 p-1" style="border-radius: 12px;">
+            <li><a class="dropdown-item rounded small text-danger" href="/logout"><i
+                  class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+          </ul>
+        </div>
       </div>
+
     </div>
   </div>
 </nav>
