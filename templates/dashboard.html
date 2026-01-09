@@ -4,151 +4,224 @@
 {% block owner_navbar %}{% endblock owner_navbar %}
 
 <div class="page-container">
-    
-<h2 class="page-title">📊 Kirana Store Dashboard</h2>
 
-<!-- Summary -->
-<div class="summary-grid">
-
-  <div class="summary-card d-flex justify-content-between align-items-center">
-    <div>
-      <h6>Today's Sales</h6>
-      <div class="summary-value">₹4,250</div>
-    </div>
-    <i class="bi bi-currency-rupee icon-box text-success"></i>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="page-title mb-0">📊 Kirana Store Dashboard</h2>
+    <button class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#saleModal">
+      <i class="bi bi-cart-plus"></i> New Sale
+    </button>
   </div>
 
-  <div class="summary-card d-flex justify-content-between align-items-center">
-    <div>
-      <h6>Total Bills</h6>
-      <div class="summary-value">38</div>
-    </div>
-    <i class="bi bi-receipt icon-box text-primary"></i>
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  {% for category, message in messages %}
+  <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show"
+    role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+  {% endfor %}
+  {% endif %}
+  {% endwith %}
+
+  <!-- Add Items Form -->
+  <div class="section-card mb-4">
+    <h5 class="fw-semibold mb-3">➕ Add New Item</h5>
+    <form method="POST" action="/add_product" enctype="application/x-www-form-urlencoded">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Item Name</label>
+          <input type="text" name="product_name" class="form-control" placeholder="e.g. Rice" required>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Rate (₹)</label>
+          <input type="number" name="rate" class="form-control" placeholder="e.g. 60" step="0.01" required>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Unit</label>
+          <select name="unit" class="form-select" required>
+            <option value="">Select</option>
+            <option value="kg">Per Kg</option>
+            <option value="liter">Per Liter</option>
+            <option value="piece">Per Piece</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Profit (₹)</label>
+          <input type="number" name="profit" class="form-control" placeholder="e.g. 5" step="0.01" required>
+        </div>
+        <div class="col-md-2 d-grid">
+          <label class="form-label">&nbsp;</label>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Item
+          </button>
+        </div>
+      </div>
+    </form>
   </div>
 
-  <div class="summary-card d-flex justify-content-between align-items-center">
-    <div>
-      <h6>Cash / UPI</h6>
-      <div class="summary-value">₹1,800 / ₹2,450</div>
+  <!-- Summary -->
+  <div class="summary-grid">
+
+    <div class="summary-card d-flex justify-content-between align-items-center">
+      <div>
+        <h6>Today's Sales</h6>
+        <div class="summary-value">₹{{ daily_sales }}</div>
+      </div>
+      <i class="bi bi-currency-rupee icon-box text-success"></i>
     </div>
-    <i class="bi bi-wallet2 icon-box text-warning"></i>
+
+    <div class="summary-card d-flex justify-content-between align-items-center">
+      <div>
+        <h6>Total Bills</h6>
+        <div class="summary-value">{{ daily_bills }}</div>
+      </div>
+      <i class="bi bi-receipt icon-box text-primary"></i>
+    </div>
+
+    <div class="summary-card d-flex justify-content-between align-items-center">
+      <div>
+        <h6>Cash / UPI</h6>
+        <div class="summary-value">₹{{ cash_sales }} / ₹{{ upi_sales }}</div>
+      </div>
+      <i class="bi bi-wallet2 icon-box text-warning"></i>
+    </div>
+
+    <div class="summary-card d-flex justify-content-between align-items-center">
+      <div>
+        <h6>Low Stock Items</h6>
+        <div class="summary-value">{{ low_stock }}</div>
+      </div>
+      <i class="bi bi-exclamation-triangle icon-box text-danger"></i>
+    </div>
+
   </div>
 
-  <div class="summary-card d-flex justify-content-between align-items-center">
-    <div>
-      <h6>Low Stock Items</h6>
-      <div class="summary-value">5</div>
+  <!-- Sales Overview -->
+  <div class="section-card">
+    <h5 class="fw-semibold mb-3">📈 Sales Overview (Today)</h5>
+    <div class="row text-center">
+      <div class="col-md-6">
+        <p class="text-muted mb-1">Total Units Sold</p>
+        <h4 class="fw-bold">{{ items_sold_today }}</h4>
+      </div>
+      <div class="col-md-6">
+        <p class="text-muted mb-1">Average Bill Value</p>
+        <h4 class="fw-bold">₹{{ avg_bill_value }}</h4>
+      </div>
     </div>
-    <i class="bi bi-exclamation-triangle icon-box text-danger"></i>
+  </div>
+
+  <!-- Recent Bills -->
+  <div class="section-card">
+    <h5 class="fw-semibold mb-3">🧾 Recent Bills</h5>
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Bill No</th>
+          <th>Amount</th>
+          <th>Payment Mode</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sale in recent_sales %}
+        <tr onclick="window.location.href='/bill?sale_id={{ sale.sale_id }}'" style="cursor: pointer;">
+          <td>#{{ sale.sale_id }}</td>
+          <td>₹{{ sale.total_amount }}</td>
+          <td>{{ sale.payment_mode or 'Cash' }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="3" class="text-center text-muted">No recent bills</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Inventory Status -->
+  <div class="section-card">
+    <h5 class="fw-semibold mb-3">📦 Inventory Status</h5>
+    <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Stock</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in inventory_items %}
+          <tr>
+            <td>{{ item.product.product_name }}</td>
+            <td>{{ item.quantity }} {{ item.product.unit }}</td>
+            <td>
+              {% if item.quantity == 0 %}
+              <span class="badge badge-out">Out</span>
+              {% elif item.quantity < 5 %} <span class="badge badge-low">Low</span>
+                {% else %}
+                <span class="badge badge-ok">OK</span>
+                {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Products List -->
+  <div class="section-card">
+    <h5 class="fw-semibold mb-3">🛒 Products List</h5>
+    {% if products %}
+    <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Rate</th>
+            <th>Unit</th>
+            <th>Profit</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for product in products %}
+          <tr>
+            <td class="fw-semibold">{{ product.product_name }}</td>
+            <td>₹{{ product.rate }}</td>
+            <td>{{ product.unit }}</td>
+            <td class="text-success fw-bold">₹{{ product.profit }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="text-muted">No products added yet. Use the form above to add products.</p>
+    {% endif %}
+  </div>
+
+  <!-- Profit -->
+  <div class="section-card">
+    <h5 class="fw-semibold mb-3">💰 Profit Summary (Today)</h5>
+    <div class="row text-center">
+      <div class="col-md-4">
+        <p class="text-muted mb-1">Revenue</p>
+        <h5 class="fw-bold">₹{{ daily_sales }}</h5>
+      </div>
+      <div class="col-md-4">
+        <p class="text-muted mb-1">Estimated Cost</p>
+        <h5 class="fw-bold">N/A</h5>
+      </div>
+      <div class="col-md-4">
+        <p class="text-muted mb-1">Profit</p>
+        <h5 class="fw-bold text-success">N/A</h5>
+      </div>
+    </div>
   </div>
 
 </div>
-
-<!-- Sales Overview -->
-<div class="section-card">
-  <h5 class="fw-semibold mb-3">📈 Sales Overview (Today)</h5>
-  <div class="row text-center">
-    <div class="col-md-6">
-      <p class="text-muted mb-1">Total Items Sold</p>
-      <h4 class="fw-bold">112</h4>
-    </div>
-    <div class="col-md-6">
-      <p class="text-muted mb-1">Average Bill Value</p>
-      <h4 class="fw-bold">₹112</h4>
-    </div>
-  </div>
-</div>
-
-<!-- Recent Bills -->
-<div class="section-card">
-  <h5 class="fw-semibold mb-3">🧾 Recent Bills</h5>
-  <table class="table table-hover align-middle">
-    <thead>
-      <tr>
-        <th>Bill No</th>
-        <th>Amount</th>
-        <th>Payment Mode</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>#1023</td>
-        <td>₹120</td>
-        <td>Cash</td>
-      </tr>
-      <tr>
-        <td>#1022</td>
-        <td>₹560</td>
-        <td>UPI</td>
-      </tr>
-      <tr>
-        <td>#1021</td>
-        <td>₹75</td>
-        <td>Cash</td>
-      </tr>
-      <tr>
-        <td>#1020</td>
-        <td>₹240</td>
-        <td>UPI</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- Inventory Status -->
-<div class="section-card">
-  <h5 class="fw-semibold mb-3">📦 Inventory Status</h5>
-  <table class="table table-hover align-middle">
-    <thead>
-      <tr>
-        <th>Item</th>
-        <th>Stock</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Rice</td>
-        <td>25 kg</td>
-        <td><span class="badge badge-ok">OK</span></td>
-      </tr>
-      <tr>
-        <td>Oil</td>
-        <td>2 packs</td>
-        <td><span class="badge badge-low">Low</span></td>
-      </tr>
-      <tr>
-        <td>Biscuits</td>
-        <td>0</td>
-        <td><span class="badge badge-out">Out</span></td>
-      </tr>
-      <tr>
-        <td>Sugar</td>
-        <td>5 kg</td>
-        <td><span class="badge badge-low">Low</span></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- Profit -->
-<div class="section-card">
-  <h5 class="fw-semibold mb-3">💰 Profit Summary (Today)</h5>
-  <div class="row text-center">
-    <div class="col-md-4">
-      <p class="text-muted mb-1">Revenue</p>
-      <h5 class="fw-bold">₹4,250</h5>
-    </div>
-    <div class="col-md-4">
-      <p class="text-muted mb-1">Estimated Cost</p>
-      <h5 class="fw-bold">₹3,600</h5>
-    </div>
-    <div class="col-md-4">
-      <p class="text-muted mb-1">Profit</p>
-      <h5 class="fw-bold text-success">₹650</h5>
-    </div>
-  </div>
-</div>
-
-</div>
+{% include 'create-sale-modal.html' %}
 {% endblock content %}

@@ -1,4 +1,3 @@
-{% block create_sale_modal %}
 <!-- Create Sale Modal -->
 <div class="modal fade" id="saleModal" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -17,10 +16,9 @@
             <label class="form-label">Product</label>
             <select id="saleProduct" class="form-select">
               <option value="">Select Product</option>
-              <option value="Rice|60">Rice (₹60/kg)</option>
-              <option value="Oil|150">Oil (₹150/ltr)</option>
-              <option value="Sugar|45">Sugar (₹45/kg)</option>
-              <option value="Biscuits|10">Biscuits (₹10/pc)</option>
+              {% for p in products %}
+              <option value="{{ p.product_id }}|{{ p.rate }}|{{ p.product_name }}">{{ p.product_name }} (₹{{ p.rate }}/{{ p.unit }})</option>
+              {% endfor %}
             </select>
           </div>
 
@@ -54,16 +52,25 @@
           </tbody>
         </table>
 
-        <!-- Grand Total -->
-        <div class="text-end mt-3">
-          <h5>Total: ₹<span id="saleGrandTotal">0</span></h5>
-        </div>
+        <!-- Payment Mode -->
+         <div class="row mt-3">
+             <div class="col-md-6">
+                 <label class="form-label">Payment Mode</label>
+                 <select id="paymentMode" class="form-select">
+                     <option value="Cash">Cash</option>
+                     <option value="UPI">UPI</option>
+                 </select>
+             </div>
+             <div class="col-md-6 text-end">
+                <h5>Total: ₹<span id="saleGrandTotal">0</span></h5>
+             </div>
+         </div>
 
       </div>
 
       <div class="modal-footer">
         <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button class="btn btn-success">Create Sale</button>
+        <button class="btn btn-success" onclick="submitSale()">Create Sale</button>
       </div>
 
     </div>
@@ -75,28 +82,47 @@ let saleItems = [];
 let saleTotal = 0;
 
 function addSaleItem(){
-  const productValue = saleProduct.value;
-  const qty = Number(saleQty.value);
+  const productValue = document.getElementById('saleProduct').value;
+  const qty = Number(document.getElementById('saleQty').value);
 
   if(!productValue || qty <= 0){
     alert("Select product and valid quantity");
     return;
   }
 
-  const [name, rate] = productValue.split("|");
-  const itemTotal = rate * qty;
+  const [productId, rate, name] = productValue.split("|");
+  const itemTotal = Number(rate) * qty;
 
-  saleItems.push({name, rate, qty, itemTotal});
+  // Check if exists
+  const existing = saleItems.find(i => i.product_id === productId);
+  if(existing){
+      existing.qty += qty;
+      existing.itemTotal += itemTotal;
+  } else {
+      saleItems.push({product_id: productId, name, rate, qty, itemTotal});
+  }
+  
   renderSaleItems();
+  
+  // Reset fields
+  document.getElementById('saleQty').value = '';
+  document.getElementById('saleProduct').value = '';
 }
 
 function renderSaleItems(){
-  saleItemsTable.innerHTML = "";
+  const tbody = document.getElementById('saleItemsTable');
+  tbody.innerHTML = "";
   saleTotal = 0;
+
+  if(saleItems.length === 0){
+      tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted">No items added</td></tr>`;
+      document.getElementById('saleGrandTotal').innerText = "0";
+      return;
+  }
 
   saleItems.forEach((item, i) => {
     saleTotal += item.itemTotal;
-    saleItemsTable.innerHTML += `
+    tbody.innerHTML += `
       <tr>
         <td>${item.name}</td>
         <td>₹${item.rate}</td>
@@ -109,12 +135,50 @@ function renderSaleItems(){
     `;
   });
 
-  saleGrandTotal.innerText = saleTotal;
+  document.getElementById('saleGrandTotal').innerText = saleTotal;
 }
 
 function removeSaleItem(index){
   saleItems.splice(index,1);
   renderSaleItems();
 }
+
+function submitSale(){
+    if(saleItems.length === 0){
+        alert("Please add items to sale");
+        return;
+    }
+    
+    const paymentMode = document.getElementById('paymentMode').value;
+    
+    const payload = {
+        payment_mode: paymentMode,
+        items: saleItems.map(i => ({
+            product_id: i.product_id,
+            quantity: i.qty
+        }))
+    };
+    
+    fetch('/create_sale', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success){
+            // alert("Sale created successfully!");
+            window.location.href = `/bill?sale_id=${data.sale_id}`;
+        } else {
+            alert("Error: " + data.message);
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Failed to create sale");
+    });
+}
 </script>
-{% endblock create_sale_modal %}
+

@@ -1,202 +1,99 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Inventory Management</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-
-<style>
-body{
-  background: linear-gradient(120deg,#f6f9fc,#eef2f7);
-  font-family: "Segoe UI", sans-serif;
-}
-
-.page-container{
-  max-width: 1100px;
-  margin: auto;
-  padding: 20px;
-}
-
-.page-title{
-  font-weight: 700;
-  color: #2c3e50;
-  margin-bottom: 25px;
-}
-
-.card{
-  border: none;
-  border-radius: 14px;
-  box-shadow: 0 8px 25px rgba(0,0,0,.08);
-}
-
-.form-control, .form-select{
-  border-radius: 10px;
-}
-
-.table thead{
-  background: #f8fafc;
-}
-
-.badge-ok{
-  background: #e8f7ee;
-  color: #1e824c;
-  font-weight: 600;
-}
-
-.badge-low{
-  background: #fff3cd;
-  color: #9a6b00;
-  font-weight: 600;
-}
-
-.badge-out{
-  background: #fdecea;
-  color: #b02a37;
-  font-weight: 600;
-}
-</style>
-</head>
-
-<body>
-
+{% extends "base.html" %}
+{% block content %}
 {% include 'owner-navbar.html' %}
+{% block owner_navbar %}{% endblock owner_navbar %}
 
 <div class="page-container">
 
 <h2 class="page-title">📦 Inventory Management</h2>
 
-<!-- Add / Update Inventory -->
-<div class="card mb-4">
-  <div class="card-header fw-semibold">Add / Update Stock</div>
-  <div class="card-body">
-    <div class="row g-3 align-items-end">
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 
+<!-- Add / Update Inventory -->
+<div class="section-card mb-4">
+  <h5 class="fw-semibold mb-3">Add / Update Stock</h5>
+  <form method="POST" action="/update_inventory" enctype="application/x-www-form-urlencoded">
+    <div class="row g-3 align-items-end">
       <div class="col-md-5">
         <label class="form-label">Product</label>
-        <select id="invProduct" class="form-select">
+        <select name="product_id" class="form-select" required>
           <option value="">Select Product</option>
-          <option value="Rice">Rice</option>
-          <option value="Oil">Oil</option>
-          <option value="Sugar">Sugar</option>
-          <option value="Biscuits">Biscuits</option>
+          {% for product in products %}
+          <option value="{{ product.product_id }}">{{ product.product_name }} (₹{{ product.rate }}/{{ product.unit }})</option>
+          {% endfor %}
         </select>
       </div>
-
       <div class="col-md-3">
         <label class="form-label">Quantity</label>
-        <input type="number" id="invQty" class="form-control" placeholder="Enter quantity">
+        <input type="number" name="quantity" class="form-control" placeholder="Enter quantity" min="0" required>
       </div>
-
       <div class="col-md-2 d-grid">
-        <button class="btn btn-primary" onclick="saveInventory()">
-          Save
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-save"></i> Save
         </button>
       </div>
-
     </div>
-  </div>
+  </form>
 </div>
 
 <!-- Inventory Table -->
-<div class="card">
-  <div class="card-header fw-semibold">Inventory List</div>
-  <div class="card-body p-0">
-    <table class="table table-hover align-middle mb-0 text-center">
+<div class="section-card">
+  <h5 class="fw-semibold mb-3">Inventory List</h5>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle text-center">
       <thead>
         <tr>
-          <th>#</th>
-          <th class="text-start">Product</th>
+          <th>Item Name</th>
+          <th>Rate</th>
           <th>Quantity</th>
-          <th>Status</th>
+          <th>Total Price</th>
           <th>Actions</th>
         </tr>
       </thead>
-      <tbody id="inventoryTable">
-        <tr>
-          <td colspan="5" class="text-muted py-4">
-            No inventory added yet
-          </td>
-        </tr>
+      <tbody>
+        {% if inventory_items %}
+          {% for item in inventory_items %}
+          <tr>
+            <td class="text-start fw-semibold">{{ item.product.product_name }}</td>
+            <td>₹{{ item.product.rate }} / {{ item.product.unit }}</td>
+            <td>{{ item.quantity }} {{ item.product.unit }}</td>
+            <td class="fw-bold text-primary">₹{{ item.quantity * item.product.rate }}</td>
+            <td>
+              <form method="POST" action="/generate_bill" enctype="application/x-www-form-urlencoded" class="d-flex gap-2 align-items-center">
+                <input type="hidden" name="inventory_id" value="{{ item.inventory_id }}">
+                <input type="hidden" name="product_id" value="{{ item.product_id }}">
+                <input type="hidden" name="rate" value="{{ item.product.rate }}">
+                <input type="number" name="quantity" class="form-control form-control-sm" 
+                       placeholder="Qty" min="1" max="{{ item.quantity }}" 
+                       value="{{ item.quantity }}" style="width: 80px;" required>
+                <button type="submit" class="btn btn-success btn-sm">
+                  <i class="bi bi-receipt"></i> Generate Bill
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="5" class="text-muted py-4">
+              No inventory items available. Add products and update stock.
+            </td>
+          </tr>
+        {% endif %}
       </tbody>
     </table>
   </div>
 </div>
 
 </div>
-
-<script>
-let inventory = [];
-let editIndex = -1;
-
-function saveInventory(){
-  const product = invProduct.value;
-  const qty = Number(invQty.value);
-
-  if(!product || qty < 0){
-    alert("Select product and valid quantity");
-    return;
-  }
-
-  if(editIndex === -1){
-    inventory.push({product, qty});
-  } else {
-    inventory[editIndex] = {product, qty};
-    editIndex = -1;
-  }
-
-  invProduct.value = "";
-  invQty.value = "";
-  renderInventory();
-}
-
-function renderInventory(){
-  inventoryTable.innerHTML = "";
-
-  if(inventory.length === 0){
-    inventoryTable.innerHTML = `
-      <tr>
-        <td colspan="5" class="text-muted py-4">No inventory added yet</td>
-      </tr>`;
-    return;
-  }
-
-  inventory.forEach((item, i) => {
-    let status = "OK";
-    let badge = "badge-ok";
-
-    if(item.qty === 0){
-      status = "Out";
-      badge = "badge-out";
-    } else if(item.qty <= 5){
-      status = "Low";
-      badge = "badge-low";
-    }
-
-    inventoryTable.innerHTML += `
-      <tr>
-        <td>${i+1}</td>
-        <td class="text-start fw-semibold">${item.product}</td>
-        <td>${item.qty}</td>
-        <td><span class="badge ${badge}">${status}</span></td>
-        <td>
-          <button class="btn btn-sm btn-warning" onclick="editInventory(${i})">
-            Edit
-          </button>
-        </td>
-      </tr>
-    `;
-  });
-}
-
-function editInventory(i){
-  invProduct.value = inventory[i].product;
-  invQty.value = inventory[i].qty;
-  editIndex = i;
-}
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+{% endblock content %}
